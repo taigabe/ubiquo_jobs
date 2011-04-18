@@ -1,6 +1,4 @@
 #!/usr/bin/env ruby
-require 'rubygems'
-require 'daemons'
 
 starter = File.join(File.dirname(__FILE__), '..', 'vendor', 'plugins', 'ubiquo_jobs', 'lib', 'ubiquo_worker', 'starter.rb')
 
@@ -39,7 +37,7 @@ opts = OptionParser.new do |opts|
 
   opts.separator ""
   opts.separator "Common options:"
-  
+
   # No argument, shows at tail.  This will print an options summary.
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
@@ -49,7 +47,7 @@ end
 
 opts.parse!(ARGV)
 
-if options[:command] == 'start' && ARGV.empty? 
+if options[:command] == 'start' && ARGV.empty?
   raise ArgumentError, "A worker name is required as an application option"
 end
 

@@ -1,16 +1,15 @@
 require File.dirname(__FILE__) + "/../test_helper.rb"
 require 'mocha'
-require 'daemons'
 
 UBIQUO_JOBS_ROOT = File.dirname(__FILE__) + "/../.."
 
 class WorkerTest < ActiveSupport::TestCase
-    
+
   def test_should_start_daemon
     Process.expects(:fork)
     run_daemon
   end
-  
+
   def test_should_start_worker
     old_argv = ARGV[0]
     ARGV[0] = 'name'
@@ -55,9 +54,9 @@ class WorkerTest < ActiveSupport::TestCase
     old_argv = ARGV[0]
     ARGV[0] = 'name'
     eval File.read(File.join(UBIQUO_JOBS_ROOT, 'install', 'script', 'ubiquo_worker'))
-    ARGV[0] = old_argv    
+    ARGV[0] = old_argv
   end
-  
+
   def run_starter()
     eval File.read(File.join(UBIQUO_JOBS_ROOT, 'lib', 'ubiquo_worker', 'starter.rb'))
   end
@@ -77,5 +76,5 @@ class WorkerTest < ActiveSupport::TestCase
     UbiquoWorker.init(options[:name])
     $stdout = orig_stdout
   end
-  
+
 end
