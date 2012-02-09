@@ -11,20 +11,26 @@ module UbiquoJobs
       #
       def self.get(runner)
         recovery(runner)
-        candidate_jobs = job_class.all(
-          :conditions => [
-            'planified_at <= ? AND state = ?',
-            Time.now.utc,
-            UbiquoJobs::Jobs::Base::STATES[:waiting]
-          ],
-          :order => 'priority asc'
-        )
-        job = first_without_dependencies(candidate_jobs)
-        job.update_attributes({
+        job_class.transaction do
+          candidate_jobs = job_class.all(
+            :conditions => [
+              'planified_at <= ? AND state = ?',
+              Time.now.utc,
+              UbiquoJobs::Jobs::Base::STATES[:waiting]
+            ],
+            :order => 'priority asc',
+            :lock => true
+          )
+
+          job = first_without_dependencies(candidate_jobs)
+          result = job.update_attributes({
             :state => UbiquoJobs::Jobs::Base::STATES[:instantiated],
             :runner => runner
           }) if job
-        job
+
+          job = nil unless result
+          job
+        end
       end
 
       # Get the job instance that has the given job_id

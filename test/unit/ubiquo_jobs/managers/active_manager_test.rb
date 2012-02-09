@@ -70,11 +70,27 @@ class UbiquoJobs::Managers::ActiveManagerTest < ActiveSupport::TestCase
     assert_equal job_1, ActiveManager.get('you')
     assert_nil ActiveManager.get('him')
   end
-  
+
   def test_should_add_job
     assert_difference 'ActiveJob.count' do
       ActiveManager.add(ActiveJob, :priority => 1000)
     end
+  end
+
+  def test_get_should_use_pessimistic_locking_for_protection_against_concurrency_problems
+    create_job(:priority => 2)
+    # We can't do a real test here as we would need a threaded environment so
+    #   we can only assure that ActiveRecord's mechanism for pessimistic locking are being
+    #   used
+    ActiveJob.expects(:all).with do |options|
+      options[:lock] == true
+    end.returns([])
+    ActiveManager.get('me')
+  end
+
+  def test_get_should_wrap_the_db_access_in_a_transaction
+    ActiveJob.expects(:transaction)
+    ActiveManager.get('me')
   end
 
   private
