@@ -1,8 +1,8 @@
 module UbiquoJobs::Concerns::Jobs::ActiveJob
   extend ActiveSupport::Concern
+  include UbiquoJobs::Jobs::JobUtils
 
   included do
-    include UbiquoJobs::Jobs::JobUtils
     #
     # Class that manages persistency of jobs classes as an ActiveRecord
     #
