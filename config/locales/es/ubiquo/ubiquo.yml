@@ -16,7 +16,7 @@ es:
       job_error_channel: "Canal de error"
       job_list: "Listado de tareas"
       job_history: "Histórico de tareas"
-      creation_date: "data de creación"
+      creation_date: "fecha de creación"
       text: "texto"
       state:
         waiting: "En espera"
