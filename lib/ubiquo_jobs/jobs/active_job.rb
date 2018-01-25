@@ -30,6 +30,7 @@ module UbiquoJobs
       # Save updated attributes.
       # Optimistic locking is handled automatically by Active Record
       def set_property(property, value)
+        reload
         update_attribute property, value
       end
 
@@ -71,6 +72,7 @@ module UbiquoJobs
       # Useful e.g. for a stopped job or a job that has not had a succesful
       # execution (is in error state) but you want a retry.
       def reset!
+        reload
         update_attributes(
           :runner => nil,
           :state => STATES[:waiting],
