@@ -25,7 +25,7 @@ class Ubiquo::JobsController < UbiquoController
       format.xml  { head :ok }
     end
   end
-  
+
   # PUT /jobs/1
   # PUT /jobs/1.xml
   def update
@@ -45,7 +45,7 @@ class Ubiquo::JobsController < UbiquoController
   end
 
   # PUT /jobs/1/repeat
-  def repeat    
+  def repeat
     UbiquoJobs.manager.repeat(params[:id])
     respond_to do |format|
       flash[:notice] = t("ubiquo.jobs.job_repeated")
@@ -62,13 +62,13 @@ class Ubiquo::JobsController < UbiquoController
   end
 
   private
-  
+
   def generic_index(finished)
     respond_to do |format|
       format.html {
         order_by = params[:order_by] || 'id'
         sort_order = params[:sort_order] || 'desc'
-        
+
         filters = {
           :text => params[:filter_text],
           :date_start => params[:filter_date_start],
@@ -76,14 +76,15 @@ class Ubiquo::JobsController < UbiquoController
           :state => (UbiquoJobs::Jobs::Base::STATES[:finished] if finished),
           :state_not => (UbiquoJobs::Jobs::Base::STATES[:finished] unless finished),
           :page => params[:page],
-          :order => "#{order_by.gsub(/^.*\./, '')} #{sort_order}"
+          :order => "#{order_by.gsub(/^.*\./, '')} #{sort_order}",
+          :per_page => 20
         }
-        @jobs_pages, @jobs = UbiquoJobs.manager.list(filters) 
+        @jobs_pages, @jobs = UbiquoJobs.manager.list(filters)
       } # index.html.erb or history.html.erb
       format.xml  {
         @jobs = UbiquoJobs.manager.list
         render :xml => @jobs
       }
-    end    
+    end
   end
 end
