@@ -46,7 +46,6 @@ module UbiquoJobs
       # Ubiquo finder method
       # See vendor/plugins/ubiquo_core/lib/extensions/active_record.rb to see an example of usage.
       def self.filtered_search(filters = {}, options = {})
-
         scopes = create_scopes(filters) do |filter, value|
           case filter
           when :text
@@ -66,6 +65,8 @@ module UbiquoJobs
           find(:all, options)
         end
       end
+
+      class << self; alias_method :job_filtered_search, :filtered_search; end
 
       # Set a job to be executed (again), giving it a planification time
       # Useful e.g. for a stopped job or a job that has not had a succesful
