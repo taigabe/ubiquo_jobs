@@ -7,6 +7,10 @@ module Ubiquo::JobsHelper
         :field   => [:filter_date_start, :filter_date_end],
         :caption => t('ubiquo.jobs.creation_date')
       )
+      f.date(
+        :field   => [:planified_at_start, :planified_at_end],
+        :caption => t('ubiquo.jobs.planified_at')
+      )
       Struct.new("FilterState", :state, :id)
       states = UbiquoJobs::Jobs::Base::STATES.to_a.map do |name, id|
         Struct::FilterState.new(state_name(id), id) if name != :finished

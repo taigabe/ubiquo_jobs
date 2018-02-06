@@ -58,6 +58,8 @@ module UbiquoJobs
             {:conditions => ["state = ?", value]}
           when :state_not
             {:conditions => ["state != ?", value]}
+          when :planified_at_start
+            {:conditions => ["planified_at BETWEEN ? AND ?", value, filters[:planified_at_end]]}
           end
         end
 

@@ -78,7 +78,10 @@ class Ubiquo::JobsController < UbiquoController
           :date_start => params[:filter_date_start],
           :date_end => params[:filter_date_end],
           :page => params[:page],
+          :planified_at_start => params[:filter_planified_at_start],
+          :planified_at_end => params[:filter_planified_at_end],
           :order => "#{order_by.gsub(/^.*\./, '')} #{sort_order}",
+          :per_page => params[:per_page]
         }
 
         state_filters = {
