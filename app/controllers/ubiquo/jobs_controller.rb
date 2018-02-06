@@ -2,6 +2,9 @@ class Ubiquo::JobsController < UbiquoController
   # GET /jobs
   # GET /jobs.xml
   def index
+    params[:sort_order] = 'desc' unless params[:sort_order]
+    params[:order_by] = 'id' unless params[:order_by]
+
     generic_index(false)
   end
 
