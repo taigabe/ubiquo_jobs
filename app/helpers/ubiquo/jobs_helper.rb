@@ -8,8 +8,10 @@ module Ubiquo::JobsHelper
         :caption => t('ubiquo.jobs.creation_date')
       )
       Struct.new("FilterState", :state, :id)
-      states = UbiquoJobs::Jobs::Base::STATES.to_a.map { |state| Struct::FilterState.new(*state) }
-      f.select :state, states, :name_field => 'state'
+      states = UbiquoJobs::Jobs::Base::STATES.to_a.map do |name, id|
+        Struct::FilterState.new(state_name(id), id) if name != :finished
+      end
+      f.select :state, states.compact, :name_field => 'state'
     end
   end
 
