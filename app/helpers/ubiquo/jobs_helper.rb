@@ -7,6 +7,9 @@ module Ubiquo::JobsHelper
         :field   => [:filter_date_start, :filter_date_end],
         :caption => t('ubiquo.jobs.creation_date')
       )
+      Struct.new("FilterState", :state, :id)
+      states = UbiquoJobs::Jobs::Base::STATES.to_a.map { |state| Struct::FilterState.new(*state) }
+      f.select :state, states, :name_field => 'state'
     end
   end
 
