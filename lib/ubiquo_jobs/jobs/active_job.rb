@@ -51,24 +51,22 @@ module UbiquoJobs
           when :text
             {:conditions => ["upper(name) LIKE upper(?)", "%#{value}%"]}
           when :date_start
-            {:conditions => ["created_at > ?", "#{value}"]}
+            {:conditions => ["created_at > ?", CalendarDateSelect.parse_only_date(value)] }
           when :date_end
-            {:conditions => ["created_at < ?", "#{value}"]}
+            {:conditions => ["created_at < ?", CalendarDateSelect.parse_only_date(value)] }
           when :state
             {:conditions => ["state = ?", value]}
           when :state_not
             {:conditions => ["state != ?", value]}
           when :planified_at_start
-            {:conditions => ["planified_at BETWEEN ? AND ?", value, filters[:planified_at_end]]}
+            {:conditions => ["planified_at > ?", CalendarDateSelect.parse_only_date(value)] }
+          when :planified_at_end
+            {:conditions => ["planified_at < ?", CalendarDateSelect.parse_only_date(value)] }
           end
         end
 
-        apply_find_scopes(scopes) do
-          find(:all, options)
-        end
+        apply_find_scopes(scopes) do find(:all, options) end
       end
-
-      class << self; alias_method :job_filtered_search, :filtered_search; end
 
       # Set a job to be executed (again), giving it a planification time
       # Useful e.g. for a stopped job or a job that has not had a succesful
