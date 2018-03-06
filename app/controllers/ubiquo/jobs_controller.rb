@@ -2,6 +2,10 @@ class Ubiquo::JobsController < UbiquoController
   # GET /jobs
   # GET /jobs.xml
   def index
+    params[:sort_order] = 'desc' unless params[:sort_order]
+    params[:order_by] = 'id' unless params[:order_by]
+    params[:per_page] = 20 unless params[:per_page]
+
     generic_index(false)
   end
 
@@ -25,7 +29,7 @@ class Ubiquo::JobsController < UbiquoController
       format.xml  { head :ok }
     end
   end
-  
+
   # PUT /jobs/1
   # PUT /jobs/1.xml
   def update
@@ -45,7 +49,7 @@ class Ubiquo::JobsController < UbiquoController
   end
 
   # PUT /jobs/1/repeat
-  def repeat    
+  def repeat
     UbiquoJobs.manager.repeat(params[:id])
     respond_to do |format|
       flash[:notice] = t("ubiquo.jobs.job_repeated")
@@ -62,28 +66,41 @@ class Ubiquo::JobsController < UbiquoController
   end
 
   private
-  
+
   def generic_index(finished)
     respond_to do |format|
       format.html {
         order_by = params[:order_by] || 'id'
         sort_order = params[:sort_order] || 'desc'
-        
+
         filters = {
           :text => params[:filter_text],
           :date_start => params[:filter_date_start],
           :date_end => params[:filter_date_end],
-          :state => (UbiquoJobs::Jobs::Base::STATES[:finished] if finished),
-          :state_not => (UbiquoJobs::Jobs::Base::STATES[:finished] unless finished),
           :page => params[:page],
-          :order => "#{order_by.gsub(/^.*\./, '')} #{sort_order}"
+          :planified_at_start => params[:filter_planified_at_start],
+          :planified_at_end => params[:filter_planified_at_end],
+          :order => "#{order_by.gsub(/^.*\./, '')} #{sort_order}",
+          :per_page => params[:per_page]
         }
-        @jobs_pages, @jobs = UbiquoJobs.manager.list(filters) 
+
+        state_filters = {
+          :state => (UbiquoJobs::Jobs::Base::STATES[:finished] if finished),
+          :state_not => (UbiquoJobs::Jobs::Base::STATES[:finished] unless finished)
+        }
+
+        if params[:filter_state].blank?
+          filters = filters.merge(state_filters)
+        else
+          filters[:state] = params[:filter_state]
+        end
+
+        @jobs_pages, @jobs = UbiquoJobs.manager.list(filters)
       } # index.html.erb or history.html.erb
       format.xml  {
         @jobs = UbiquoJobs.manager.list
         render :xml => @jobs
       }
-    end    
+    end
   end
 end
