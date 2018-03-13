@@ -47,8 +47,12 @@ module UbiquoJobs
       # Ubiquo finder method
       # See vendor/plugins/ubiquo_core/lib/extensions/active_record.rb to see an example of usage.
       def self.filtered_search(filters = {}, options = {})
+        filters[:scopes] = options.delete(:scopes)
+
         scopes = create_scopes(filters) do |filter, value|
           case filter
+          when :scopes
+            value
           when :text
             {:conditions => ["upper(name) LIKE upper(?)", "%#{value}%"]}
           when :date_start
@@ -66,7 +70,7 @@ module UbiquoJobs
           end
         end
 
-        apply_find_scopes(scopes) do find(:all, options) end
+        apply_find_scopes(scopes.compact.flatten) do find(:all, options) end
       end
 
       # Set a job to be executed (again), giving it a planification time
